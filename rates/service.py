@@ -1,7 +1,16 @@
-from notifications.models import Notification, NotificationType
+import uuid
+from datetime import datetime
+from notifications.models import Notification
 
 class RateLimitsService:
-    def check_if_rate_is_ok(self, notif_type, client_uuid, date_from, date_to, max_times):
+    def check_if_rate_is_ok(
+            self,
+            notif_type: str,
+            client_uuid: uuid.UUID,
+            date_from: datetime,
+            date_to: datetime,
+            max_times: int
+        ):
         """
         Check if a certain notification type can be sent to a user, based on rate limits.
         For this, the Notifications of a certain type between now and the specified minutes must be counted.
