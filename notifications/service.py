@@ -19,20 +19,20 @@ class NotificationService:
                 minutes=minutes
             )
         except IntegrityError:
-             logger.error(f"Notification type {name} already exists or some value is incorrect. Please check")
+             logger.error(f'Notification type {name} already exists or some value is incorrect. Please check')
              raise
         
-        logger.info(f"Notification type {name} successfully created")
+        logger.info(f'Notification type {name} successfully created')
         return
 
     def edit_notification_type_rate(self, name, max_times, minutes):
         try:
             NotificationType.objects.filter(name=name).update(max_times_allowed=max_times, minutes=minutes)
         except IntegrityError:
-            logger.error(f"Notification type {name} update failed because some value is incorrect. Please check")
+            logger.error(f'Notification type {name} update failed because some value is incorrect. Please check')
             raise
         else:
-            logger.info(f"Notification type {name} successfully updated")
+            logger.info(f'Notification type {name} successfully updated')
 
         return
 

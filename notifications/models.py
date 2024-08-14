@@ -34,4 +34,4 @@ class Notification(models.Model):
     datetime = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.datetime} {self.notification_type} - {self.client}"
+        return f'{self.datetime} {self.notification_type} - {self.client}'

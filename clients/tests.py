@@ -17,7 +17,7 @@ class ClientsModelsTests(TestCase):
 class ClientsServiceTests(TestCase):
     def test_create_user_method_ok(self, mock_logger):
         ClientsService().create_client(email=EXAMPLE_EMAIL)
-        mock_logger.info.assert_called_with("Client someexample@miemail.com created successfully")
+        mock_logger.info.assert_called_with('Client someexample@miemail.com created successfully')
         self.assertEqual(Client.objects.count(), 1)
 
     def test_create_user_method_fails(self, mock_logger):
@@ -25,5 +25,5 @@ class ClientsServiceTests(TestCase):
         self.assertEqual(Client.objects.count(), 1)
         with (self.assertRaises(IntegrityError), transaction.atomic()):
             ClientsService().create_client(email=EXAMPLE_EMAIL)
-            mock_logger.error.assert_called_with("Client with email someexample@miemail.com already exists")
+            mock_logger.error.assert_called_with('Client with email someexample@miemail.com already exists')
         self.assertEqual(Client.objects.count(), 1)

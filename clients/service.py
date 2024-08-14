@@ -12,15 +12,15 @@ class ClientsService:
         try:
             Client.objects.create(email=email)
         except IntegrityError:
-            logger.error(f"Client with email {email} already exists")
+            logger.error(f'Client with email {email} already exists')
             raise
     
-        logger.info(f"Client {email} created successfully")
+        logger.info(f'Client {email} created successfully')
         return
 
     def get_client_by_uuid(self, uuid):
         try:
             return Client.objects.get(uuid=uuid)
         except Client.DoesNotExist:
-            logger.error(f"Client with uuid {uuid} does not exist")
+            logger.error(f'Client with uuid {uuid} does not exist')
             raise ClientDoesNotExistError
