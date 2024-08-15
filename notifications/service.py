@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class IncorrectNotificationTypeError(Exception):
     pass
 
-class NotificationService:
+class NotificationsService:
     def send_notification(self, notif_type: str, client_uuid: uuid.UUID, message: str):
         """
         Sends a Notification of a specific type to a Client.
