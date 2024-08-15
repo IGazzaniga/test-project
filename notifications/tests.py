@@ -2,7 +2,7 @@ import uuid
 from django.test import TestCase
 from unittest.mock import patch
 from notifications.models import Notification, NotificationType
-from notifications.service import NotificationService, IncorrectNotificationTypeError
+from notifications.service import NotificationsService, IncorrectNotificationTypeError
 from clients.models import Client
 from clients.service import ClientDoesNotExistError
 from rates.service import RateLimitError
@@ -23,12 +23,12 @@ class NotificationModelsTests(TestCase):
         self.assertEqual(str(notif), f'{notif.datetime} {EXAMPLE_NAME} - {EXAMPLE_EMAIL}')
 
 @patch('notifications.service.logger')
-class NotificationServiceTests(TestCase):
+class NotificationsServiceTests(TestCase):
     @patch('rates.service.RateLimitsService.check_if_rate_is_ok', return_value=True)
     def test_send_notification_successfully_rate_ok(self, mock_rate, mock_logger):
         notif_type = NotificationType.objects.create(name=EXAMPLE_NAME, max_times_allowed=1, minutes=100)
         client = Client.objects.create(email=EXAMPLE_EMAIL)
-        NotificationService().send_notification(notif_type=EXAMPLE_NAME, client_uuid=client.uuid, message='Hello world')
+        NotificationsService().send_notification(notif_type=EXAMPLE_NAME, client_uuid=client.uuid, message='Hello world')
         mock_logger.info.assert_called_with(f'Notification of type {EXAMPLE_NAME} sent to client {client.uuid} successfully')
         self.assertEqual(Notification.objects.count(), 1)
         notification = Notification.objects.first()
@@ -41,7 +41,7 @@ class NotificationServiceTests(TestCase):
         client = Client.objects.create(email=EXAMPLE_EMAIL)
         NotificationType.objects.create(name=EXAMPLE_NAME, max_times_allowed=1, minutes=100)
         with self.assertRaises(RateLimitError):
-            NotificationService().send_notification(notif_type=EXAMPLE_NAME, client_uuid=client.uuid, message='Hello world')
+            NotificationsService().send_notification(notif_type=EXAMPLE_NAME, client_uuid=client.uuid, message='Hello world')
             mock_logger.warning.assert_called_with(f'Notification of type {EXAMPLE_NAME} cannot be sent to client {client.uuid} due to rate limits')        
             self.assertEqual(Notification.objects.count(), 0)
 
@@ -49,13 +49,13 @@ class NotificationServiceTests(TestCase):
         random_uuid = uuid.uuid4()
         NotificationType.objects.create(name=EXAMPLE_NAME, max_times_allowed=1, minutes=100)
         with self.assertRaises(ClientDoesNotExistError):
-            NotificationService().send_notification(notif_type=EXAMPLE_NAME, client_uuid=random_uuid, message='Hello world')
+            NotificationsService().send_notification(notif_type=EXAMPLE_NAME, client_uuid=random_uuid, message='Hello world')
             mock_logger.warning.assert_called_with(f'Client with uuid {random_uuid} does not exist')        
             self.assertEqual(Notification.objects.count(), 0)
 
     def test_send_notification_error_notification_type_does_not_exist(self, mock_logger):
         client = Client.objects.create(email=EXAMPLE_EMAIL)
         with self.assertRaises(IncorrectNotificationTypeError):
-            NotificationService().send_notification(notif_type='RANDOM', client_uuid=client.uuid, message='Hello world')
+            NotificationsService().send_notification(notif_type='RANDOM', client_uuid=client.uuid, message='Hello world')
             mock_logger.error.assert_called_with(f'Notification type RANDOM does not exist')        
             self.assertEqual(Notification.objects.count(), 0)
