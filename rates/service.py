@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timedelta
 from notifications.models import Notification, NotificationType
 from django.db.utils import IntegrityError
-
+from django.utils import timezone
 logger = logging.getLogger(__name__)
 
 class RateLimitError(Exception):
@@ -18,7 +18,7 @@ class RateLimitsService:
         If the minutes parameter is not a positive integer, raise an IntegrityError
         """
         try:
-            NotificationType.objects.create(
+            notif_type = NotificationType.objects.create(
                 name=name,
                 max_times_allowed=max_times,
                 minutes=minutes
@@ -28,7 +28,7 @@ class RateLimitsService:
              raise
         
         logger.info(f'Notification type {name} successfully created')
-        return
+        return notif_type
 
     def edit_notification_type_rate(self, name: str, max_times: int, minutes: int):
         """
@@ -58,7 +58,7 @@ class RateLimitsService:
         If the amount is lower, the notification can be sent.
         Otherwise, raise a custom RateLimitError exception.
         """
-        date_to = datetime.now()
+        date_to = timezone.now()
         date_from = date_to - timedelta(minutes=notif_type.minutes)
         max_times = notif_type.max_times_allowed
 
