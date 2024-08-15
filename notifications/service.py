@@ -2,7 +2,6 @@ import logging
 import uuid
 from notifications.models import Notification, NotificationType
 from datetime import datetime
-from django.db.utils import IntegrityError
 from rates.service import RateLimitsService, RateLimitError
 from clients.service import ClientsService, ClientDoesNotExistError
 
