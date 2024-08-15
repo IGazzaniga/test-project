@@ -15,13 +15,13 @@ class ClientsService:
         If a Client with the same email already exists, raise an IntegrityError
         """
         try:
-            Client.objects.create(email=email)
+            client = Client.objects.create(email=email)
         except IntegrityError:
             logger.error(f'Client with email {email} already exists')
             raise
     
         logger.info(f'Client {email} created successfully')
-        return
+        return client
 
     def get_client_by_uuid(self, uuid: uuid.UUID):
         """
